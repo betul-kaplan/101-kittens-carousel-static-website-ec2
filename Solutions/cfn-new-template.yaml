@@ -22,29 +22,29 @@ Parameters:
       - t3.micro
       - t2.large
 
-  Resources:
-    MyWebServer:
-      Type: AWS::EC2::Instance
-      Properties:
-        ImageId: !Ref imageID
-        InstanceType: !Ref instanceType
-        KeyName: !Ref keyPair
-        SecurityGroupIds: 
-          - !Ref mySecGrp
-        Tags: 
-          Key: Name
+Resources:
+  MyWebServer:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref imageID
+      InstanceType: !Ref instanceType
+      KeyName: !Ref keyPair
+      SecurityGroupIds: 
+        - !Ref mySecGrp
+      Tags: 
+        - Key: Name
           Value: !Sub ${AWS::StackName}
-        UserData: !Base64 |
-          #! /bin/bash 
-          dnf update -y
-          dnf install -y htppd
-          chmod 77 /var/www/html
-          cd /var/www/hatml
-          dnf install git -y
-          git clone https://github.com/betul-kaplan/101-kittens-carousel-static-website-ec2.git
-          mv kittens-web-project/static-web/* .
-          systemctl restart httpd
-          systemctl enable httpd
+      UserData: !Base64 |
+        #! /bin/bash 
+        dnf update -y
+        dnf install httpd -y
+        chmod 777 /var/www/html
+        cd /var/www/html
+        dnf install git -y
+        git clone https://github.com/betul-kaplan/101-kittens-carousel-static-website-ec2.git
+        mv 101-kittens-carousel-static-website-ec2/static-web/* .
+        systemctl restart httpd
+        systemctl enable httpd
 
 
   mySecGrp:
@@ -62,11 +62,11 @@ Parameters:
           ToPort: 22
           CidrIp: 0.0.0.0/0  
 Outputs:    
-  LogicalID:
+  webSiteURL:
     Description: URL of web site
     Value: !Sub 
       - http://${PublicDNS}
-      - PublicDNS: !GetAtt MyWebServer.publicDnsName
+      - PublicDNS: !GetAtt MyWebServer.PublicDnsName
           
        
   
